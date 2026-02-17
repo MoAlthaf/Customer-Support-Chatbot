@@ -46,9 +46,9 @@ if user_input:
             st.markdown(bot_reply)
 
         # Show details
-        with st.expander("Conversation Details"):
-            st.write("**Intent:**", data["intent"])
-            st.write("**Summary:**", data["summary"])
+        #with st.expander("Conversation Details"):
+            #st.write("**Intent:**", data["intent"])
+            #st.write("**Summary:**", data["summary"])
 
     else:
         st.error("Error communicating with backend API.")
