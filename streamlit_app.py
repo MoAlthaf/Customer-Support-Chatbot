@@ -1,12 +1,13 @@
 import streamlit as st
 import requests
+import os
 
 st.set_page_config(page_title="Customer Support Chatbot", page_icon="💬")
 
 st.title("💬 Customer Support Chatbot")
 
-API_URL = "http://127.0.0.1:5000/chat"
-RESET_URL = "http://127.0.0.1:5000/reset"
+API_URL = os.getenv("API_URL")
+RESET_URL = os.getenv("RESET_URL")
 
 # Initialize session state
 if "messages" not in st.session_state:
