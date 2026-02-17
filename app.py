@@ -1,35 +1,49 @@
-from flask import Flask,request,jsonify
+from flask import Flask, request, jsonify
 from chatbot import get_response
 
-app=Flask(__name__)
+app = Flask(__name__)
 
-#Storing COnversation History
-chat_history=[]
+# In-memory storage (simple for lab assignment)
+chat_history = []
+running_summary = ""
 
 @app.route("/")
 def home():
-    return "Customer Support Chatbot is running!"
+    return "Customer Support Chatbot API is running!"
 
-@app.route("/chat",methods=["POST"])
+@app.route("/chat", methods=["POST"])
 def chat():
-    global chat_history
+    global chat_history, running_summary
 
-    data=request.get_json()
-    user_input=data.get("message","")
+    data = request.get_json()
+    user_input = data.get("message")
 
     if not user_input:
-        return jsonify({"error":"No message provided"}),400
-    
-    response,chat_history=get_response(user_input,chat_history)
+        return jsonify({"error": "No message provided"}), 400
 
-    if response is None:
-        return jsonify({"error":"Failed to get response from chatbot"}),500
-    
+    result, chat_history, running_summary = get_response(
+        user_input,
+        chat_history,
+        running_summary
+    )
+
+    if result is None:
+        return jsonify({"error": "LLM processing failed"}), 500
+
     return jsonify({
-        "intent":response.intent,
-        "response":response.response,
-        "summary":response.summary
+        "intent": result.intent,
+        "response": result.response,
+        "summary": result.summary
     })
+
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    global chat_history, running_summary
+    chat_history = []
+    running_summary = ""
+    return jsonify({"message": "Conversation reset successful"})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
