@@ -1,13 +1,14 @@
 import streamlit as st
 import requests
 import os
-
+from dotenv import load_dotenv
 st.set_page_config(page_title="Customer Support Chatbot", page_icon="💬")
 
 st.title("💬 Customer Support Chatbot")
 
-API_URL = st.secrets["API_URL"]
-RESET_URL = st.secrets["RESET_URL"]
+#load_dotenv() #Only for local testing
+API_URL = os.getenv("API_URL") #st.secrets["API_URL"]
+RESET_URL =os.getenv("RESET_URL")  #st.secrets["RESET_URL"]
 
 # Initialize session state
 if "messages" not in st.session_state:
@@ -35,7 +36,7 @@ if user_input:
 
     # Send to backend
     response = requests.post(API_URL, json={"message": user_input})
-
+    
     if response.status_code == 200:
         data = response.json()
 

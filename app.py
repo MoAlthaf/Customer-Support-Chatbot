@@ -16,26 +16,37 @@ def home():
 def chat():
     global chat_history, running_summary
 
-    data = request.get_json()
-    user_input = data.get("message")
+    try:
+        data = request.get_json()
+        user_input = data.get("message")
 
-    if not user_input:
-        return jsonify({"error": "No message provided"}), 400
+        if not user_input:
+            return jsonify({"error": "No message provided"}), 400
 
-    result, chat_history, running_summary = get_response(
-        user_input,
-        chat_history,
-        running_summary
-    )
+        result, chat_history, running_summary = get_response(
+            user_input,
+            chat_history,
+            running_summary
+        )
 
-    if result is None:
-        return jsonify({"error": "LLM processing failed"}), 500
-
-    return jsonify({
+        if not result:
+            return jsonify({"error": "Empty result from LLM"}), 500
+        
+        return jsonify({
         "intent": result.intent,
         "response": result.response,
-        "summary": result.summary
-    })
+        "summary": result.summary}), 200
+    
+    except Exception as e:
+        print(f"Error processing request: {e}")
+        return jsonify({
+            "intent": "unknown",
+            "response": "Internal formatting error. Please try again.",
+            "summary": ""
+        }), 200
+
+
+
 
 
 @app.route("/reset", methods=["POST"])
@@ -47,5 +58,7 @@ def reset():
 
 
 if __name__ == "__main__":
+    #debug mode to test locally
+    #app.run(debug=True)
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
