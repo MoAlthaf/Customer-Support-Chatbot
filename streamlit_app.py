@@ -6,8 +6,8 @@ st.set_page_config(page_title="Customer Support Chatbot", page_icon="💬")
 
 st.title("💬 Customer Support Chatbot")
 
-API_URL = os.getenv("API_URL")
-RESET_URL = os.getenv("RESET_URL")
+API_URL = st.secrets["API_URL"]
+RESET_URL = st.secrets["RESET_URL"]
 
 # Initialize session state
 if "messages" not in st.session_state:
